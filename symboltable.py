@@ -74,6 +74,7 @@ class ScopedSymbolTable(object):
         self.scope_name = scope_name
         self.scope_level = scope_level
         self.enclosing_scope = enclosing_scope
+        self._init_builtins()
     
     def _init_builtins(self):
         for primitive in ['INT', 'BOOLEAN', 'STRING']:
@@ -106,7 +107,7 @@ class ScopedSymbolTable(object):
         lines.extend([h2, '-' * len(h2)])
         lines.extend(
             ('%7s: %r' % (key, value))
-            for key, value in self._symbols.items()
+            for key, value in self.symbols.items()
         )
         lines.append('\n')
         s = '\n'.join(lines)

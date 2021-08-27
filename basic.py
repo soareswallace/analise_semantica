@@ -1,5 +1,5 @@
 from lexer import *
-from parser import *
+from custom_parser import *
 from astnodes import *
 from visitor import *
 import sys
@@ -14,11 +14,7 @@ def main():
     parser = Parser(lexer)
     prog = parser.program()    
     
-    symbolTable = BuildSymbolTableVisitor(prog).build()
+    symbolTable = BuildSymbolTableVisitor(prog, "global", 0).build()
     print(symbolTable)
-
-    # interpreter = Interpreter(prog)
-    # interpreter.interpret()
-    # print(interpreter.symbolTable)
 
 main()

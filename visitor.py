@@ -10,10 +10,11 @@ class NodeVisitor(object):
         raise Exception('No visit_{} method'.format(type(node).__name__))
 
 class BuildSymbolTableVisitor(NodeVisitor):
-    def __init__(self, tree):
+    def __init__(self, tree, scope_name, scope_level, enclosing_scope=None):
         self.ast = tree
-        self.symbolTable = SymbolTable()
-    
+        self.symbolTable = ScopedSymbolTable(scope_name, scope_level, enclosing_scope)
+        self.scopes_inside = []
+
     def build(self):
         self.visit(self.ast)
         return self.symbolTable
@@ -75,9 +76,13 @@ class BuildSymbolTableVisitor(NodeVisitor):
         else: 
             self.erro('Condição do IF deve ser BOOLEAN, recebeu uma expressão de tipo '+str(tipo_condicao))
 
-    def visit_BlockStm(self,node):
-        for stm in node.stmts:
-            self.visit(stm)
+    def visit_BlockStm(self, node):
+        if self.ast != node:
+            newSymbolTable = BuildSymbolTableVisitor(node, "Block", self.symbolTable.scope_level + 1, self).build()
+            self.scopes_inside.append(newSymbolTable)
+        else:
+            for stm in node.stmts:
+                    self.visit(stm)
 
     def visit_TrueExpr(self, node):
         return self.BOOLEAN()
